@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Train Monitor Pro - Download Portal</title>
+    <title>Lionel Train Monitor Pro - Professional Arduino Monitoring System</title>
     <style>
         * {
             margin: 0;
@@ -13,360 +13,412 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .hero {
             background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             color: white;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .price-tag {
+            background: rgba(255,255,255,0.2);
+            display: inline-block;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .cta-button {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 18px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .secondary-button {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+
+        .secondary-button:hover {
+            background: white;
+            color: #1e3c72;
         }
 
         .container {
-            background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 500px;
-            width: 100%;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.2);
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
         }
 
-        .logo {
+        .features {
+            padding: 80px 20px;
+            background: #f8f9fa;
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            color: #2c3e50;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
             font-size: 3rem;
             margin-bottom: 20px;
         }
 
-        h1 {
-            font-size: 2rem;
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .what-included {
+            padding: 80px 20px;
+            background: white;
+        }
+
+        .included-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .included-item {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid #ff6b6b;
+        }
+
+        .included-item h4 {
+            color: #2c3e50;
             margin-bottom: 10px;
+            font-size: 1.2rem;
         }
 
-        .subtitle {
-            opacity: 0.8;
-            margin-bottom: 30px;
+        .testimonial {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
         }
 
-        .access-form {
-            background: rgba(255,255,255,0.1);
-            padding: 30px;
-            border-radius: 15px;
-            margin-bottom: 30px;
+        .testimonial-content {
+            max-width: 800px;
+            margin: 0 auto;
         }
 
-        .form-group {
+        .testimonial blockquote {
+            font-size: 1.5rem;
+            font-style: italic;
             margin-bottom: 20px;
-            text-align: left;
         }
 
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-
-        input[type="email"], input[type="text"] {
-            width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            background: rgba(255,255,255,0.9);
-            color: #333;
-        }
-
-        input[type="email"]:focus, input[type="text"]:focus {
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
-        }
-
-        .verify-btn {
-            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+        .guarantee {
+            background: #2c3e50;
             color: white;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 25px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.2s;
-            width: 100%;
+            padding: 60px 20px;
+            text-align: center;
         }
 
-        .verify-btn:hover {
-            transform: translateY(-2px);
+        .guarantee h3 {
+            font-size: 2rem;
+            margin-bottom: 20px;
         }
 
-        .verify-btn:disabled {
-            background: #666;
-            cursor: not-allowed;
-            transform: none;
+        .final-cta {
+            background: #1e3c72;
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
         }
 
-        .download-section {
-            display: none;
-            background: rgba(46, 213, 115, 0.2);
-            padding: 30px;
-            border-radius: 15px;
-            border: 2px solid #2ed573;
-        }
-
-        .download-section.show {
-            display: block;
-        }
-
-        .download-item {
-            background: rgba(255,255,255,0.1);
-            padding: 20px;
-            border-radius: 10px;
-            margin: 15px 0;
+        .payment-options {
+            margin-top: 30px;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .payment-logos {
+            display: flex;
+            justify-content: center;
             align-items: center;
-        }
-
-        .download-btn {
-            background: #2ed573;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: bold;
-            text-decoration: none;
-            display: inline-block;
-        }
-
-        .download-btn:hover {
-            background: #26d566;
-        }
-
-        .error-message {
-            background: rgba(255, 107, 107, 0.2);
-            color: #ff6b6b;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 15px 0;
-            border: 1px solid #ff6b6b;
-            display: none;
-        }
-
-        .error-message.show {
-            display: block;
-        }
-
-        .success-message {
-            background: rgba(46, 213, 115, 0.2);
-            color: #2ed573;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 15px 0;
-            border: 1px solid #2ed573;
-        }
-
-        .info-box {
-            background: rgba(255,255,255,0.1);
-            padding: 20px;
-            border-radius: 10px;
+            gap: 20px;
             margin-top: 20px;
-            font-size: 14px;
             opacity: 0.8;
         }
 
-        .support-link {
-            color: #feca57;
+        .demo-link {
+            background: rgba(255,255,255,0.1);
+            padding: 10px 20px;
+            border-radius: 25px;
             text-decoration: none;
-            font-weight: bold;
+            color: white;
+            display: inline-block;
+            margin-top: 20px;
+            transition: background 0.3s;
         }
 
-        .support-link:hover {
-            text-decoration: underline;
+        .demo-link:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .payment-options {
+                flex-direction: column;
+                align-items: center;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="logo">🚂</div>
-        <h1>Train Monitor Pro</h1>
-        <p class="subtitle">Secure Download Portal</p>
-
-        <div class="access-form">
-            <div class="form-group">
-                <label for="email">Email Address (from purchase):</label>
-                <input type="email" id="email" placeholder="your.email@example.com" required>
+    <section class="hero">
+        <div class="container">
+            <h1>🚂 Lionel Train Monitor Pro</h1>
+            <p>Professional Arduino-based real-time monitoring system for model trains</p>
+            
+            <div class="price-tag">
+                Complete System: $149
             </div>
             
-            <div class="form-group">
-                <label for="order-id">Stripe Payment ID or Order Number:</label>
-                <input type="text" id="order-id" placeholder="pi_1234567890abcdef or similar" required>
+            <div class="payment-options">
+                <!-- PayPal Buy Now Button -->
+                <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+                    <input type="hidden" name="cmd" value="_s-xclick">
+                    <input type="hidden" name="hosted_button_id" value="YOUR_BUTTON_ID_HERE">
+                    <input type="submit" value="Buy Now with PayPal" class="cta-button">
+                </form>
+                
+                <!-- Stripe Checkout Button -->
+                <a href="https://buy.stripe.com/aFa5kF5Zvgnr5HDakp7wA00" class="cta-button" target="_blank">
+                    Buy Now with Card
+                </a>
             </div>
             
-            <button class="verify-btn" onclick="verifyPurchase()">
-                Verify Purchase & Download
-            </button>
-        </div>
-
-        <div class="error-message" id="error-message"></div>
-
-        <div class="download-section" id="download-section">
-            <div class="success-message">
-                ✅ Purchase verified! Your downloads are ready.
-            </div>
+            <a href="https://sparkman61.github.io/lionel-train-monitor" class="demo-link">
+                🔗 Try Free Demo First
+            </a>
             
-            <div class="download-item">
-                <div>
-                    <strong>Arduino Code Package</strong><br>
-                    <small>Complete .ino file with all libraries</small>
-                </div>
-                <a href="#" class="download-btn" onclick="downloadFile('arduino')">Download</a>
-            </div>
-            
-            <div class="download-item">
-                <div>
-                    <strong>Web Monitor App</strong><br>
-                    <small>HTML file with all features</small>
-                </div>
-                <a href="#" class="download-btn" onclick="downloadFile('webapp')">Download</a>
-            </div>
-            
-            <div class="download-item">
-                <div>
-                    <strong>Complete Documentation</strong><br>
-                    <small>Setup guide, wiring, parts list</small>
-                </div>
-                <a href="#" class="download-btn" onclick="downloadFile('docs')">Download</a>
-            </div>
-            
-            <div class="download-item">
-                <div>
-                    <strong>Everything (ZIP)</strong><br>
-                    <small>All files in one convenient package</small>
-                </div>
-                <a href="#" class="download-btn" onclick="downloadFile('complete')">Download All</a>
+            <div class="payment-logos">
+                <span>💳 Visa</span>
+                <span>💳 Mastercard</span>
+                <span>🅿️ PayPal</span>
+                <span>🔒 Secure</span>
             </div>
         </div>
+    </section>
 
-        <div class="info-box">
-            <strong>Download Instructions:</strong><br>
-            • Downloads are available for 30 days after purchase<br>
-            • Each file can be downloaded up to 5 times<br>
-            • Having issues? <a href="mailto:support@yoursite.com" class="support-link">Contact Support</a><br>
-            • Free updates: Check your email for update notifications
+    <section class="features">
+        <div class="container">
+            <h2>Complete Professional Train Monitoring</h2>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Real-Time Analytics</h3>
+                    <p>Monitor voltage, current, power, speed, and temperature in real-time with professional-grade visualizations and data export capabilities.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>Wireless Monitoring</h3>
+                    <p>Connect wirelessly via Bluetooth to your phone, tablet, or computer. Monitor from anywhere around your layout.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">⏱️</div>
+                    <h3>Lap Time Tracking</h3>
+                    <p>Automatic lap detection and timing with best/average statistics. Perfect for performance optimization and racing.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">⚠️</div>
+                    <h3>Smart Alerts</h3>
+                    <p>Intelligent warnings for temperature, voltage, current, and performance issues. Prevent damage before it happens.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">💾</div>
+                    <h3>Data Export</h3>
+                    <p>Export detailed session data in CSV or JSON format for advanced analysis and record keeping.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔧</div>
+                    <h3>Arduino Nano 33 BLE</h3>
+                    <p>Uses the powerful Arduino Nano 33 BLE with professional-grade sensors for accurate, reliable monitoring.</p>
+                </div>
+            </div>
         </div>
-    </div>
+    </section>
+
+    <section class="what-included">
+        <div class="container">
+            <h2>What's Included</h2>
+            
+            <div class="included-grid">
+                <div class="included-item">
+                    <h4>🔧 Complete Arduino Code</h4>
+                    <p>Fully commented, production-ready Arduino sketch with all sensor integrations and Bluetooth communication.</p>
+                </div>
+                
+                <div class="included-item">
+                    <h4>🌐 Web Monitoring App</h4>
+                    <p>Professional web application with real-time charts, gauges, and analytics. Works on any device.</p>
+                </div>
+                
+                <div class="included-item">
+                    <h4>📋 Complete Parts List</h4>
+                    <p>Detailed list of all required components with direct links to suppliers (Amazon, Adafruit, etc.).</p>
+                </div>
+                
+                <div class="included-item">
+                    <h4>🔌 Wiring Diagrams</h4>
+                    <p>Clear, professional wiring diagrams showing exactly how to connect every component.</p>
+                </div>
+                
+                <div class="included-item">
+                    <h4>📖 Setup Instructions</h4>
+                    <p>Step-by-step guide from unboxing to first monitoring session. No experience required.</p>
+                </div>
+                
+                <div class="included-item">
+                    <h4>🛠️ Installation Guide</h4>
+                    <p>Track installation tips, sensor placement guide, and optimization recommendations.</p>
+                </div>
+                
+                <div class="included-item">
+                    <h4>📧 Email Support</h4>
+                    <p>90 days of email support to help you get up and running successfully.</p>
+                </div>
+                
+                <div class="included-item">
+                    <h4>🔄 Free Updates</h4>
+                    <p>Receive all future code updates and feature additions at no extra cost.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="testimonial">
+        <div class="container">
+            <div class="testimonial-content">
+                <blockquote>
+                    "This monitoring system has completely transformed how I run my layout. The real-time data helps me optimize performance and catch problems before they become expensive repairs. Worth every penny!"
+                </blockquote>
+                <p><strong>- Model Train Enthusiast</strong></p>
+            </div>
+        </div>
+    </section>
+
+    <section class="guarantee">
+        <div class="container">
+            <h3>🛡️ 30-Day Money-Back Guarantee</h3>
+            <p>Try the system risk-free. If you're not completely satisfied within 30 days, get a full refund. No questions asked.</p>
+        </div>
+    </section>
+
+    <section class="final-cta">
+        <div class="container">
+            <h2>Start Monitoring Your Train Today</h2>
+            <p>Join model train enthusiasts who are already using professional monitoring to optimize their layouts.</p>
+            
+            <div class="payment-options">
+                <!-- PayPal Buy Now Button -->
+                <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+                    <input type="hidden" name="cmd" value="_s-xclick">
+                    <input type="hidden" name="hosted_button_id" value="YOUR_BUTTON_ID_HERE">
+                    <input type="submit" value="Buy Now - $149" class="cta-button">
+                </form>
+                
+                <!-- Stripe Checkout Button -->
+                <a href="https://buy.stripe.com/aFa5kF5Zvgnr5HDakp7wA00" class="cta-button" target="_blank">
+                    Buy with Credit Card - $149
+                </a>
+            </div>
+            
+            <p style="margin-top: 20px; opacity: 0.8;">
+                <small>Instant download after purchase • Secure payment • 30-day guarantee</small>
+            </p>
+        </div>
+    </section>
 
     <script>
-        // Purchase verification system
-        async function verifyPurchase() {
-            const email = document.getElementById('email').value;
-            const orderId = document.getElementById('order-id').value;
-            const errorDiv = document.getElementById('error-message');
-            const downloadSection = document.getElementById('download-section');
-            const verifyBtn = document.querySelector('.verify-btn');
-
-            // Clear previous errors
-            errorDiv.classList.remove('show');
-            
-            if (!email || !orderId) {
-                showError('Please fill in both email and order ID');
-                return;
-            }
-
-            verifyBtn.disabled = true;
-            verifyBtn.textContent = 'Verifying...';
-
-            try {
-                // In production, this would call your backend API
-                // For now, simulate verification
-                const response = await simulateVerification(email, orderId);
-                
-                if (response.valid) {
-                    downloadSection.classList.add('show');
-                    document.querySelector('.access-form').style.display = 'none';
-                } else {
-                    showError('Purchase verification failed. Please check your email and order ID.');
-                }
-            } catch (error) {
-                showError('Verification error. Please try again or contact support.');
-            } finally {
-                verifyBtn.disabled = false;
-                verifyBtn.textContent = 'Verify Purchase & Download';
-            }
+        // Simple analytics tracking
+        function trackPurchaseIntent(method) {
+            console.log('Purchase intent:', method);
+            // Add Google Analytics or other tracking here if desired
         }
 
-        // Simulate purchase verification (replace with real API call)
-        async function simulateVerification(email, orderId) {
-            // Simulate API delay
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            
-            // In production, this would:
-            // 1. Call your backend API
-            // 2. Check Stripe for valid payment
-            // 3. Verify email matches purchase
-            // 4. Check download limits
-            
-            // For demo, return true for any valid-looking inputs
-            const emailValid = email.includes('@') && email.includes('.');
-            const orderValid = orderId.length > 10;
-            
-            return {
-                valid: emailValid && orderValid,
-                downloads_remaining: 5,
-                expires: '2024-02-01'
-            };
-        }
-
-        function showError(message) {
-            const errorDiv = document.getElementById('error-message');
-            errorDiv.textContent = message;
-            errorDiv.classList.add('show');
-        }
-
-        function downloadFile(type) {
-            // In production, this would:
-            // 1. Generate secure download link
-            // 2. Track download count
-            // 3. Serve file from secure storage
-            
-            const files = {
-                'arduino': 'train-monitor-arduino-v5.zip',
-                'webapp': 'train-monitor-webapp.zip', 
-                'docs': 'train-monitor-docs.zip',
-                'complete': 'train-monitor-complete-system.zip'
-            };
-            
-            // Simulate download
-            alert(`Downloading ${files[type]}...\n\nIn production, this would download the actual file from secure storage.`);
-            
-            // Track download
-            console.log(`Download tracked: ${type} for user`);
-        }
-
-        // Auto-fill from URL parameters (from Stripe success redirect)
-        window.addEventListener('load', function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const email = urlParams.get('prefilled_email');
-            const sessionId = urlParams.get('session_id');
-            const paymentIntent = urlParams.get('payment_intent');
-            
-            if (email) document.getElementById('email').value = email;
-            if (sessionId) document.getElementById('order-id').value = sessionId;
-            if (paymentIntent) document.getElementById('order-id').value = paymentIntent;
-            
-            // If we have URL params, show a success message
-            if (sessionId || paymentIntent) {
-                showSuccessMessage();
-            }
+        // Track when users click buy buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            const buyButtons = document.querySelectorAll('.cta-button');
+            buyButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    trackPurchaseIntent('stripe_direct');
+                });
+            });
         });
-
-        function showSuccessMessage() {
-            const container = document.querySelector('.container');
-            const successMsg = document.createElement('div');
-            successMsg.className = 'success-message';
-            successMsg.innerHTML = '🎉 Payment successful! Please verify your purchase below to download your files.';
-            container.insertBefore(successMsg, document.querySelector('.access-form'));
-        }
     </script>
 </body>
 </html>
