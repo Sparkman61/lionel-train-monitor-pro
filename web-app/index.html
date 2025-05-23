@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lionel Train Monitor</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 2px solid rgba(255,255,255,0.2);
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff4757;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.connected {
+            background: #2ed573;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .connect-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: transform 0.2s;
+        }
+
+        .connect-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .connect-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: rgba(255,255,255,0.15);
+            border-radius: 12px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: transform 0.3s;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .metric-title {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+
+        .metric-unit {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .chart-card {
+            background: rgba(255,255,255,0.15);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .chart-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        .warning {
+            background: linear-gradient(45deg, #ff6b6b, #ff4757);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+            text-align: center;
+            font-weight: bold;
+            animation: flash 1s infinite alternate;
+        }
+
+        @keyframes flash {
+            0% { opacity: 0.8; }
+            100% { opacity: 1; }
+        }
+
+        .lap-counter {
+            background: linear-gradient(45deg, #feca57, #ff9ff3);
+            color: #2f3542;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .lap-info {
+            text-align: left;
+        }
+
+        .lap-times {
+            text-align: right;
+            font-size: 0.9rem;
+            line-height: 1.3;
+        }
+
+        .current-time {
+            font-size: 1.1rem;
+            color: #2f3640;
+        }
+
+        .export-controls {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .export-btn {
+            background: linear-gradient(45deg, #3742fa, #2f3542);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: transform 0.2s;
+        }
+
+        .export-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .recording-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .recording-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ff4757;
+            animation: pulse 1.5s infinite;
+        }
+
+        .alert-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 300px;
+        }
+
+        .alert {
+            background: linear-gradient(45deg, #ff6b6b, #ff4757);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .alert.info {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+        }
+
+        .alert.warning {
+            background: linear-gradient(45deg, #feca57, #ff9ff3);
+            color: #2f3542;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .gauges-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .gauge {
+            background: rgba(255,255,255,0.15);
+            border-radius: 12px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            text-align: center;
+        }
+
+        .gauge-title {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+
+        .gauge-circle {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 10px;
+            position: relative;
+        }
+
+        .gauge-svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .gauge-bg {
+            fill: none;
+            stroke: rgba(255,255,255,0.3);
+            stroke-width: 8;
+        }
+
+        .gauge-fill {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
+            transition: stroke-dasharray 0.3s ease;
+        }
+
+        .gauge-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .gauge-value {
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        @media (min-width: 768px) {
+            .charts-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        function startNewLap() {
+            currentLapStartTime = Date.now();
+            lapData.distances = [];
+            lapData.voltages = [];
+            lapData.maxDistance = 0;
+            
+            // Start lap timer
+            if (lapTimerInterval) clearInterval(lapTimerInterval);
+            lapTimerInterval = setInterval(updateLapTimer, 100);
+            
+            showAlert(`Starting Lap ${lapCount + 1}`, 'info');
+            console.log(`Starting new lap ${lapCount + 1}`);
+        }
+
+        function completeLap() {
+            lapCount++;
+            
+            if (currentLapStartTime) {
+                const lapTime = Date.now() - currentLapStartTime;
+                lapTimes.push(lapTime);
+                
+                const timeStr = formatTime(lapTime);
+                showAlert(`Lap ${lapCount} completed in ${timeStr}`, 'info');
+                
+                updateLapTimeDisplay();
+            }
+            
+            // Reset lap data for new lap
+            lapData.distances = [];
+            lapData.voltages = [];
+            lapData.maxDistance = 0;
+            
+            console.log(`Lap ${lapCount} completed - resetting voltage/distance correlation data`);
+        }
+
+        function updateLapTimer() {
+            if (currentLapStartTime) {
+                const elapsed = Date.now() - currentLapStartTime;
+                document.getElementById('currentLapTime').textContent = formatTime(elapsed);
+            }
+        }
+
+        function formatTime(milliseconds) {
+            const totalSeconds = Math.floor(milliseconds / 1000);
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            const ms = Math.floor((milliseconds % 1000) / 100);
+            return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${ms}`;
+        }
+
+        function updateLapTimeDisplay() {
+            if (lapTimes.length === 0) return;
+            
+            const bestTime = Math.min(...lapTimes);
+            const avgTime = lapTimes.reduce((a, b) => a + b, 0) / lapTimes.length;
+            
+            document.getElementById('bestLapTime').textContent = formatTime(bestTime);
+            document.getElementById('avgLapTime').textContent = formatTime(avgTime);
+        }
+
+        function updateGauge(type, value, min, max) {
+            const percentage = Math.min(Math.max((value - min) / (max - min), 0), 1);
+            const circumference = 2 * Math.PI * 32; // radius = 32
+            const dashArray = `${percentage * circumference} ${circumference}`;
+            
+            document.getElementById(`${type}GaugeFill`).setAttribute('stroke-dasharray', dashArray);
+            document.getElementById(`${type}GaugeValue`).textContent = value.toFixed(1);
+        }
+
+        function recordDataPoint(metric, value) {
+            const timestamp = new Date();
+            const dataPoint = {
+                timestamp: timestamp,
+                elapsed: timestamp - sessionStartTime,
+                metric: metric,
+                value: value,
+                lap: lapCount,
+                distance: currentDistance || 0
+            };
+            
+            sessionData.push(dataPoint);
+            
+            // Keep only last 1000 data points to prevent memory issues
+            if (sessionData.length > 1000) {
+                sessionData = sessionData.slice(-1000);
+            }
+        }
+
+        function checkPerformanceAlerts(metric, value) {
+            switch(metric) {
+                case 'temperature':
+                    if (value > thresholds.maxTemp) {
+                        showAlert(`Temperature warning: ${value.toFixed(1)}°C`, 'warning');
+                    }
+                    break;
+                case 'voltage':
+                    if (value < thresholds.minVoltage) {
+                        showAlert(`Low voltage: ${value.toFixed(1)}V`, 'warning');
+                    }
+                    break;
+                case 'current':
+                    if (value > thresholds.maxCurrent) {
+                        showAlert(`High current: ${value.toFixed(2)}A`, 'warning');
+                    }
+                    break;
+                case 'power':
+                    if (value > thresholds.maxPower) {
+                        showAlert(`High power consumption: ${value.toFixed(1)}W`, 'warning');
+                    }
+                    break;
+                case 'speed':
+                    if (value < thresholds.minSpeed && lapCount > 0) {
+                        showAlert('Train may be stalled', 'warning');
+                    }
+                    break;
+            }
+        }
+
+        function showAlert(message, type = 'info') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert ${type}`;
+            alert.textContent = message;
+            
+            alertContainer.appendChild(alert);
+            
+            // Remove alert after 5 seconds
+            setTimeout(() => {
+                if (alert.parentNode) {
+                    alert.parentNode.removeChild(alert);
+                }
+            }, 5000);
+        }
+
+        function exportData(format) {
+            if (sessionData.length === 0) {
+                showAlert('No data to export', 'warning');
+                return;
+            }
+            
+            const filename = `train_monitor_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}`;
+            
+            if (format === 'csv') {
+                exportCSV(filename);
+            } else if (format === 'json') {
+                exportJSON(filename);
+            }
+        }
+
+        function exportCSV(filename) {
+            const headers = ['Timestamp', 'Elapsed (ms)', 'Metric', 'Value', 'Lap', 'Distance'];
+            const rows = sessionData.map(point => [
+                point.timestamp.toISOString(),
+                point.elapsed,
+                point.metric,
+                point.value,
+                point.lap,
+                point.distance
+            ]);
+            
+            const csvContent = [headers, ...rows].map(row => row.join(',')).join('\n');
+            downloadFile(csvContent, `${filename}.csv`, 'text/csv');
+            showAlert('CSV data exported successfully', 'info');
+        }
+
+        function exportJSON(filename) {
+            const exportData = {
+                sessionStart: sessionStartTime,
+                lapTimes: lapTimes,
+                totalLaps: lapCount,
+                data: sessionData
+            };
+            
+            const jsonContent = JSON.stringify(exportData, null, 2);
+            downloadFile(jsonContent, `${filename}.json`, 'application/json');
+            showAlert('JSON data exported successfully', 'info');
+        }
+
+        function downloadFile(content, filename, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        function clearData() {
+            if (confirm('Are you sure you want to clear all recorded data?')) {
+                sessionData = [];
+                lapTimes = [];
+                lapCount = 0;
+                sessionStartTime = new Date();
+                currentLapStartTime = null;
+                if (lapTimerInterval) clearInterval(lapTimerInterval);
+                
+                document.getElementById('currentLapTime').textContent = '00:00';
+                document.getElementById('bestLapTime').textContent = '--:--';
+                document.getElementById('avgLapTime').textContent = '--:--';
+                document.querySelector('.lap-info div').textContent = 'Lap: 0 | Distance: 0 inches';
+                
+                showAlert('All data cleared', 'info');
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .charts-container {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .status-bar {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .metric-value {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚂 Lionel Train Monitor</h1>
+            <p>Real-time train performance monitoring</p>
+        </div>
+
+        <div class="status-bar">
+            <div class="connection-status">
+                <div class="status-dot" id="statusDot"></div>
+                <span id="connectionText">Disconnected</span>
+            </div>
+            <button class="connect-btn" id="connectBtn" onclick="connectToTrain()">
+                Connect to Train
+            </button>
+        </div>
+
+        <div class="lap-counter" id="lapCounter">
+            <div class="lap-info">
+                <div>Lap: 0 | Distance: 0 inches</div>
+            </div>
+            <div class="lap-times">
+                <div class="current-time" id="currentLapTime">00:00</div>
+                <div>Best: <span id="bestLapTime">--:--</span></div>
+                <div>Avg: <span id="avgLapTime">--:--</span></div>
+            </div>
+        </div>
+
+        <div class="export-controls">
+            <div class="recording-status">
+                <div class="recording-dot"></div>
+                <span>Recording Session</span>
+            </div>
+            <div>
+                <button class="export-btn" onclick="exportData('csv')">Export CSV</button>
+                <button class="export-btn" onclick="exportData('json')">Export JSON</button>
+                <button class="export-btn" onclick="clearData()">Clear Data</button>
+            </div>
+        </div>
+
+        <div class="alert-container" id="alertContainer"></div>
+
+        <div id="tempWarning" class="warning" style="display: none;">
+            ⚠️ HIGH TEMPERATURE WARNING ⚠️
+        </div>
+
+        <div class="gauges-container">
+            <div class="gauge">
+                <div class="gauge-title">Speed</div>
+                <div class="gauge-circle">
+                    <svg class="gauge-svg">
+                        <circle class="gauge-bg" cx="40" cy="40" r="32"></circle>
+                        <circle class="gauge-fill" cx="40" cy="40" r="32" id="speedGaugeFill" 
+                                stroke="#a8e6cf" stroke-dasharray="0 201"></circle>
+                    </svg>
+                    <div class="gauge-text">
+                        <div class="gauge-value" id="speedGaugeValue">0</div>
+                        <div>in/s</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="gauge">
+                <div class="gauge-title">Power</div>
+                <div class="gauge-circle">
+                    <svg class="gauge-svg">
+                        <circle class="gauge-bg" cx="40" cy="40" r="32"></circle>
+                        <circle class="gauge-fill" cx="40" cy="40" r="32" id="powerGaugeFill" 
+                                stroke="#ffe66d" stroke-dasharray="0 201"></circle>
+                    </svg>
+                    <div class="gauge-text">
+                        <div class="gauge-value" id="powerGaugeValue">0</div>
+                        <div>W</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="gauge">
+                <div class="gauge-title">Temperature</div>
+                <div class="gauge-circle">
+                    <svg class="gauge-svg">
+                        <circle class="gauge-bg" cx="40" cy="40" r="32"></circle>
+                        <circle class="gauge-fill" cx="40" cy="40" r="32" id="tempGaugeFill" 
+                                stroke="#ff8b94" stroke-dasharray="0 201"></circle>
+                    </svg>
+                    <div class="gauge-text">
+                        <div class="gauge-value" id="tempGaugeValue">0</div>
+                        <div>°C</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="gauge">
+                <div class="gauge-title">Voltage</div>
+                <div class="gauge-circle">
+                    <svg class="gauge-svg">
+                        <circle class="gauge-bg" cx="40" cy="40" r="32"></circle>
+                        <circle class="gauge-fill" cx="40" cy="40" r="32" id="voltageGaugeFill" 
+                                stroke="#ff6b6b" stroke-dasharray="0 201"></circle>
+                    </svg>
+                    <div class="gauge-text">
+                        <div class="gauge-value" id="voltageGaugeValue">0</div>
+                        <div>V</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-title">Voltage</div>
+                <div class="metric-value" id="voltageValue">0.0</div>
+                <div class="metric-unit">Volts</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-title">Current</div>
+                <div class="metric-value" id="currentValue">0.00</div>
+                <div class="metric-unit">Amperes</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-title">Power</div>
+                <div class="metric-value" id="powerValue">0.0</div>
+                <div class="metric-unit">Watts</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-title">Speed</div>
+                <div class="metric-value" id="speedValue">0.0</div>
+                <div class="metric-unit">in/sec</div>
+            </div>
+
+            <div class="metric-card">
+                <div class="metric-title">Temperature</div>
+                <div class="metric-value" id="tempValue">0.0</div>
+                <div class="metric-unit">°C</div>
+            </div>
+        </div>
+
+        <div class="charts-container">
+            <div class="chart-card">
+                <div class="chart-title">Voltage vs Distance (Current Lap)</div>
+                <div class="chart-container">
+                    <canvas id="voltageDistanceChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-title">Electrical Power</div>
+                <div class="chart-container">
+                    <canvas id="powerChart"></canvas>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-title">Speed & Temperature</div>
+                <div class="chart-container">
+                    <canvas id="speedTempChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // BLE service and characteristic UUIDs from Arduino code
+        const SERVICE_UUID = '19B10000-E8F2-537E-4F6C-D104768A1214';
+        const VOLTAGE_UUID = '19B10001-E8F2-537E-4F6C-D104768A1214';
+        const CURRENT_UUID = '19B10002-E8F2-537E-4F6C-D104768A1214';
+        const POWER_UUID = '19B10003-E8F2-537E-4F6C-D104768A1214';
+        const SPEED_UUID = '19B10004-E8F2-537E-4F6C-D104768A1214';
+        const DISTANCE_UUID = '19B10005-E8F2-537E-4F6C-D104768A1214';
+        const TEMP_UUID = '19B10006-E8F2-537E-4F6C-D104768A1214';
+
+        let device, service;
+        let characteristics = {};
+        let isConnected = false;
+        let lapCount = 0;
+        let currentDistance = 0;
+
+        // Lap timing variables
+        let lapStartTime = null;
+        let currentLapStartTime = null;
+        let lapTimes = [];
+        let lapTimerInterval = null;
+
+        // Data recording for export
+        let sessionData = [];
+        let sessionStartTime = new Date();
+
+        // Performance thresholds for alerts
+        const thresholds = {
+            maxTemp: 60,
+            minVoltage: 8,
+            maxCurrent: 5,
+            minSpeed: 0.5,
+            maxPower: 50
+        };
+
+        // Chart setup
+        const maxDataPoints = 50;
+        const chartData = {
+            labels: [],
+            voltage: [],
+            current: [],
+            power: [],
+            speed: [],
+            temperature: []
+        };
+
+        // Voltage-Distance correlation data for current lap
+        const lapData = {
+            distances: [],
+            voltages: [],
+            maxDistance: 0
+        };
+
+        // Initialize charts
+        const powerChart = new Chart(document.getElementById('powerChart'), {
+            type: 'line',
+            data: {
+                labels: chartData.labels,
+                datasets: [
+                    {
+                        label: 'Voltage (V)',
+                        data: chartData.voltage,
+                        borderColor: '#ff6b6b',
+                        backgroundColor: 'rgba(255, 107, 107, 0.1)',
+                        tension: 0.4,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Current (A)',
+                        data: chartData.current,
+                        borderColor: '#4ecdc4',
+                        backgroundColor: 'rgba(78, 205, 196, 0.1)',
+                        tension: 0.4,
+                        yAxisID: 'y1'
+                    },
+                    {
+                        label: 'Power (W)',
+                        data: chartData.power,
+                        borderColor: '#ffe66d',
+                        backgroundColor: 'rgba(255, 230, 109, 0.1)',
+                        tension: 0.4,
+                        yAxisID: 'y2'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: 'white' }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: 'white' },
+                        grid: { color: 'rgba(255,255,255,0.2)' }
+                    },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        ticks: { color: 'white' },
+                        grid: { color: 'rgba(255,255,255,0.2)' }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        ticks: { color: 'white' },
+                        grid: { drawOnChartArea: false }
+                    },
+                    y2: {
+                        type: 'linear',
+                        display: false
+                    }
+                }
+            }
+        });
+
+        const voltageDistanceChart = new Chart(document.getElementById('voltageDistanceChart'), {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Voltage vs Distance',
+                    data: lapData.distances.map((dist, i) => ({ x: dist, y: lapData.voltages[i] })),
+                    backgroundColor: 'rgba(255, 107, 107, 0.6)',
+                    borderColor: '#ff6b6b',
+                    borderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: 'white' }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return `Distance: ${context.parsed.x.toFixed(1)}" | Voltage: ${context.parsed.y.toFixed(2)}V`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom',
+                        title: {
+                            display: true,
+                            text: 'Distance from Lap Start (inches)',
+                            color: 'white'
+                        },
+                        ticks: { color: 'white' },
+                        grid: { color: 'rgba(255,255,255,0.2)' }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Voltage (V)',
+                            color: 'white'
+                        },
+                        ticks: { color: 'white' },
+                        grid: { color: 'rgba(255,255,255,0.2)' }
+                    }
+                }
+            }
+        });
+
+        const speedTempChart = new Chart(document.getElementById('speedTempChart'), {
+            type: 'line',
+            data: {
+                labels: chartData.labels,
+                datasets: [
+                    {
+                        label: 'Speed (in/s)',
+                        data: chartData.speed,
+                        borderColor: '#a8e6cf',
+                        backgroundColor: 'rgba(168, 230, 207, 0.1)',
+                        tension: 0.4,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Temperature (°C)',
+                        data: chartData.temperature,
+                        borderColor: '#ff8b94',
+                        backgroundColor: 'rgba(255, 139, 148, 0.1)',
+                        tension: 0.4,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: 'white' }
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: 'white' },
+                        grid: { color: 'rgba(255,255,255,0.2)' }
+                    },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        ticks: { color: 'white' },
+                        grid: { color: 'rgba(255,255,255,0.2)' }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        ticks: { color: 'white' },
+                        grid: { drawOnChartArea: false }
+                    }
+                }
+            }
+        });
+
+        async function connectToTrain() {
+            if (!navigator.bluetooth) {
+                alert('Bluetooth is not supported on this device/browser. Please use Chrome on Android or a compatible browser.');
+                return;
+            }
+
+            try {
+                document.getElementById('connectBtn').disabled = true;
+                document.getElementById('connectBtn').textContent = 'Connecting...';
+
+                // Request device
+                device = await navigator.bluetooth.requestDevice({
+                    filters: [{ name: 'TrainMonitor' }],
+                    optionalServices: [SERVICE_UUID]
+                });
+
+                // Connect to GATT server
+                const server = await device.gatt.connect();
+                service = await server.getPrimaryService(SERVICE_UUID);
+
+                // Get all characteristics
+                characteristics.voltage = await service.getCharacteristic(VOLTAGE_UUID);
+                characteristics.current = await service.getCharacteristic(CURRENT_UUID);
+                characteristics.power = await service.getCharacteristic(POWER_UUID);
+                characteristics.speed = await service.getCharacteristic(SPEED_UUID);
+                characteristics.distance = await service.getCharacteristic(DISTANCE_UUID);
+                characteristics.temperature = await service.getCharacteristic(TEMP_UUID);
+
+                // Start notifications
+                await characteristics.voltage.startNotifications();
+                await characteristics.current.startNotifications();
+                await characteristics.power.startNotifications();
+                await characteristics.speed.startNotifications();
+                await characteristics.distance.startNotifications();
+                await characteristics.temperature.startNotifications();
+
+                // Add event listeners
+                characteristics.voltage.addEventListener('characteristicvaluechanged', handleVoltage);
+                characteristics.current.addEventListener('characteristicvaluechanged', handleCurrent);
+                characteristics.power.addEventListener('characteristicvaluechanged', handlePower);
+                characteristics.speed.addEventListener('characteristicvaluechanged', handleSpeed);
+                characteristics.distance.addEventListener('characteristicvaluechanged', handleDistance);
+                characteristics.temperature.addEventListener('characteristicvaluechanged', handleTemperature);
+
+                // Handle disconnection
+                device.addEventListener('gattserverdisconnected', handleDisconnection);
+
+                updateConnectionStatus(true);
+                console.log('Connected to TrainMonitor!');
+
+            } catch (error) {
+                console.error('Connection failed:', error);
+                alert('Failed to connect to train monitor. Make sure the device is powered on and in range.');
+                updateConnectionStatus(false);
+            }
+        }
+
+        function handleVoltage(event) {
+            const value = event.target.value.getFloat32(0, true);
+            document.getElementById('voltageValue').textContent = value.toFixed(1);
+            updateChart('voltage', value);
+            updateGauge('voltage', value, 0, 20);
+            
+            // Add to voltage-distance correlation if we have current distance
+            if (currentDistance !== null) {
+                updateVoltageDistanceCorrelation(currentDistance, value);
+            }
+
+            // Record data and check alerts
+            recordDataPoint('voltage', value);
+            checkPerformanceAlerts('voltage', value);
+        }
+
+        function handleCurrent(event) {
+            const value = event.target.value.getFloat32(0, true);
+            document.getElementById('currentValue').textContent = value.toFixed(2);
+            updateChart('current', value);
+            recordDataPoint('current', value);
+            checkPerformanceAlerts('current', value);
+        }
+
+        function handlePower(event) {
+            const value = event.target.value.getFloat32(0, true);
+            document.getElementById('powerValue').textContent = value.toFixed(1);
+            updateChart('power', value);
+            updateGauge('power', value, 0, 50);
+            recordDataPoint('power', value);
+            checkPerformanceAlerts('power', value);
+        }
+
+        function handleSpeed(event) {
+            const value = event.target.value.getFloat32(0, true);
+            document.getElementById('speedValue').textContent = value.toFixed(1);
+            updateChart('speed', value);
+            updateGauge('speed', value, 0, 10);
+            recordDataPoint('speed', value);
+            checkPerformanceAlerts('speed', value);
+        }
+
+        function handleDistance(event) {
+            const value = event.target.value.getFloat32(0, true);
+            
+            // Detect lap completion (distance reset to near 0)
+            if (currentDistance > 12 && value < 6) { // If we had significant distance and now it's reset
+                completeLap();
+            } else if (currentDistance < 6 && value > 6 && lapCount === 0) {
+                // Starting first lap
+                startNewLap();
+            }
+            
+            currentDistance = value;
+            
+            // Track maximum distance reached in current lap
+            if (value > lapData.maxDistance) {
+                lapData.maxDistance = value;
+            }
+            
+            const feet = Math.floor(value / 12);
+            const inches = Math.floor(value % 12);
+            const distanceText = feet > 0 ? `${feet}ft ${inches}in` : `${inches}in`;
+            
+            document.querySelector('.lap-info div').textContent = `Lap: ${lapCount} | Distance: ${distanceText}`;
+            recordDataPoint('distance', value);
+        }
+
+        function handleTemperature(event) {
+            const value = event.target.value.getFloat32(0, true);
+            document.getElementById('tempValue').textContent = value.toFixed(1);
+            updateChart('temperature', value);
+            updateGauge('temperature', value, 0, 80);
+            recordDataPoint('temperature', value);
+            
+            // Show temperature warning
+            const warning = document.getElementById('tempWarning');
+            if (value > thresholds.maxTemp) {
+                warning.style.display = 'block';
+                showAlert(`High temperature detected: ${value.toFixed(1)}°C`, 'warning');
+            } else {
+                warning.style.display = 'none';
+            }
+            
+            checkPerformanceAlerts('temperature', value);
+        }
+
+        function updateChart(type, value) {
+            const now = new Date().toLocaleTimeString();
+            
+            // Add new data point
+            if (chartData.labels.length === 0 || chartData.labels[chartData.labels.length - 1] !== now) {
+                chartData.labels.push(now);
+                
+                // Initialize all arrays if this is a new timestamp
+                Object.keys(chartData).forEach(key => {
+                    if (key !== 'labels' && chartData[key].length < chartData.labels.length - 1) {
+                        chartData[key].push(0);
+                    }
+                });
+            }
+            
+            // Update the specific data type
+            chartData[type][chartData.labels.length - 1] = value;
+            
+            // Keep only the last maxDataPoints
+            if (chartData.labels.length > maxDataPoints) {
+                chartData.labels.shift();
+                Object.keys(chartData).forEach(key => {
+                    if (key !== 'labels') {
+                        chartData[key].shift();
+                    }
+                });
+            }
+            
+            // Update charts
+            powerChart.update('none');
+            speedTempChart.update('none');
+        }
+
+        function updateVoltageDistanceCorrelation(distance, voltage) {
+            // Only add data points if we have reasonable values
+            if (distance >= 0 && voltage > 0) {
+                lapData.distances.push(distance);
+                lapData.voltages.push(voltage);
+                
+                // Update chart data
+                voltageDistanceChart.data.datasets[0].data = lapData.distances.map((dist, i) => ({
+                    x: dist,
+                    y: lapData.voltages[i]
+                }));
+                
+                // Update chart
+                voltageDistanceChart.update('none');
+            }
+        }
+
+        function handleDisconnection() {
+            updateConnectionStatus(false);
+            console.log('Disconnected from TrainMonitor');
+        }
+
+        function updateConnectionStatus(connected) {
+            isConnected = connected;
+            const statusDot = document.getElementById('statusDot');
+            const connectionText = document.getElementById('connectionText');
+            const connectBtn = document.getElementById('connectBtn');
+
+            if (connected) {
+                statusDot.classList.add('connected');
+                connectionText.textContent = 'Connected to TrainMonitor';
+                connectBtn.textContent = 'Connected';
+                connectBtn.disabled = true;
+            } else {
+                statusDot.classList.remove('connected');
+                connectionText.textContent = 'Disconnected';
+                connectBtn.textContent = 'Connect to Train';
+                connectBtn.disabled = false;
+            }
+        }
+
+        // Check for Bluetooth support on load
+        window.addEventListener('load', () => {
+            if (!navigator.bluetooth) {
+                document.getElementById('connectBtn').textContent = 'Bluetooth Not Supported';
+                document.getElementById('connectBtn').disabled = true;
+            }
+        });
+    </script>
+</body>
+</html>
