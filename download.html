@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Train Monitor Pro - Download Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            opacity: 0.8;
+            margin-bottom: 30px;
+        }
+
+        .access-form {
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input[type="email"], input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+        }
+
+        input[type="email"]:focus, input[type="text"]:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
+        }
+
+        .verify-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100%;
+        }
+
+        .verify-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .verify-btn:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .download-section {
+            display: none;
+            background: rgba(46, 213, 115, 0.2);
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #2ed573;
+        }
+
+        .download-section.show {
+            display: block;
+        }
+
+        .download-item {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .download-btn {
+            background: #2ed573;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .download-btn:hover {
+            background: #26d566;
+        }
+
+        .error-message {
+            background: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 1px solid #ff6b6b;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .success-message {
+            background: rgba(46, 213, 115, 0.2);
+            color: #2ed573;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 1px solid #2ed573;
+        }
+
+        .info-box {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .support-link {
+            color: #feca57;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .support-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🚂</div>
+        <h1>Train Monitor Pro</h1>
+        <p class="subtitle">Secure Download Portal</p>
+
+        <div class="access-form">
+            <div class="form-group">
+                <label for="email">Email Address (from purchase):</label>
+                <input type="email" id="email" placeholder="your.email@example.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="order-id">Stripe Payment ID or Order Number:</label>
+                <input type="text" id="order-id" placeholder="pi_1234567890abcdef or similar" required>
+            </div>
+            
+            <button class="verify-btn" onclick="verifyPurchase()">
+                Verify Purchase & Download
+            </button>
+        </div>
+
+        <div class="error-message" id="error-message"></div>
+
+        <div class="download-section" id="download-section">
+            <div class="success-message">
+                ✅ Purchase verified! Your downloads are ready.
+            </div>
+            
+            <div class="download-item">
+                <div>
+                    <strong>Arduino Code Package</strong><br>
+                    <small>Complete .ino file with all libraries</small>
+                </div>
+                <a href="#" class="download-btn" onclick="downloadFile('arduino')">Download</a>
+            </div>
+            
+            <div class="download-item">
+                <div>
+                    <strong>Web Monitor App</strong><br>
+                    <small>HTML file with all features</small>
+                </div>
+                <a href="#" class="download-btn" onclick="downloadFile('webapp')">Download</a>
+            </div>
+            
+            <div class="download-item">
+                <div>
+                    <strong>Complete Documentation</strong><br>
+                    <small>Setup guide, wiring, parts list</small>
+                </div>
+                <a href="#" class="download-btn" onclick="downloadFile('docs')">Download</a>
+            </div>
+            
+            <div class="download-item">
+                <div>
+                    <strong>Everything (ZIP)</strong><br>
+                    <small>All files in one convenient package</small>
+                </div>
+                <a href="#" class="download-btn" onclick="downloadFile('complete')">Download All</a>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <strong>Download Instructions:</strong><br>
+            • Downloads are available for 30 days after purchase<br>
+            • Each file can be downloaded up to 5 times<br>
+            • Having issues? <a href="mailto:support@yoursite.com" class="support-link">Contact Support</a><br>
+            • Free updates: Check your email for update notifications
+        </div>
+    </div>
+
+    <script>
+        // Purchase verification system
+        async function verifyPurchase() {
+            const email = document.getElementById('email').value;
+            const orderId = document.getElementById('order-id').value;
+            const errorDiv = document.getElementById('error-message');
+            const downloadSection = document.getElementById('download-section');
+            const verifyBtn = document.querySelector('.verify-btn');
+
+            // Clear previous errors
+            errorDiv.classList.remove('show');
+            
+            if (!email || !orderId) {
+                showError('Please fill in both email and order ID');
+                return;
+            }
+
+            verifyBtn.disabled = true;
+            verifyBtn.textContent = 'Verifying...';
+
+            try {
+                // In production, this would call your backend API
+                // For now, simulate verification
+                const response = await simulateVerification(email, orderId);
+                
+                if (response.valid) {
+                    downloadSection.classList.add('show');
+                    document.querySelector('.access-form').style.display = 'none';
+                } else {
+                    showError('Purchase verification failed. Please check your email and order ID.');
+                }
+            } catch (error) {
+                showError('Verification error. Please try again or contact support.');
+            } finally {
+                verifyBtn.disabled = false;
+                verifyBtn.textContent = 'Verify Purchase & Download';
+            }
+        }
+
+        // Simulate purchase verification (replace with real API call)
+        async function simulateVerification(email, orderId) {
+            // Simulate API delay
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // In production, this would:
+            // 1. Call your backend API
+            // 2. Check Stripe for valid payment
+            // 3. Verify email matches purchase
+            // 4. Check download limits
+            
+            // For demo, return true for any valid-looking inputs
+            const emailValid = email.includes('@') && email.includes('.');
+            const orderValid = orderId.length > 10;
+            
+            return {
+                valid: emailValid && orderValid,
+                downloads_remaining: 5,
+                expires: '2024-02-01'
+            };
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+        }
+
+        function downloadFile(type) {
+            // In production, this would:
+            // 1. Generate secure download link
+            // 2. Track download count
+            // 3. Serve file from secure storage
+            
+            const files = {
+                'arduino': 'train-monitor-arduino-v5.zip',
+                'webapp': 'train-monitor-webapp.zip', 
+                'docs': 'train-monitor-docs.zip',
+                'complete': 'train-monitor-complete-system.zip'
+            };
+            
+            // Simulate download
+            alert(`Downloading ${files[type]}...\n\nIn production, this would download the actual file from secure storage.`);
+            
+            // Track download
+            console.log(`Download tracked: ${type} for user`);
+        }
+
+        // Auto-fill from URL parameters (from Stripe success redirect)
+        window.addEventListener('load', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const email = urlParams.get('prefilled_email');
+            const sessionId = urlParams.get('session_id');
+            const paymentIntent = urlParams.get('payment_intent');
+            
+            if (email) document.getElementById('email').value = email;
+            if (sessionId) document.getElementById('order-id').value = sessionId;
+            if (paymentIntent) document.getElementById('order-id').value = paymentIntent;
+            
+            // If we have URL params, show a success message
+            if (sessionId || paymentIntent) {
+                showSuccessMessage();
+            }
+        });
+
+        function showSuccessMessage() {
+            const container = document.querySelector('.container');
+            const successMsg = document.createElement('div');
+            successMsg.className = 'success-message';
+            successMsg.innerHTML = '🎉 Payment successful! Please verify your purchase below to download your files.';
+            container.insertBefore(successMsg, document.querySelector('.access-form'));
+        }
+    </script>
+</body>
+</html>
